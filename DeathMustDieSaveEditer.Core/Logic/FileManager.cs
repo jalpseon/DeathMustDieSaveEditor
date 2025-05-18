@@ -73,7 +73,10 @@ namespace DeathMustDieSaveEditor.Core.Logic
             return json;
         }
 
-        private string ReaFileToEnd(string filePath)
+        // Reads a text file completely. The previous name "ReaFileToEnd" was a
+        // typo and the method is currently unused, but it may be helpful later
+        // so keep it here with the corrected name.
+        private string ReadFileToEnd(string filePath)
         {
             using StreamReader stream = File.OpenText(filePath);
             return stream.ReadToEnd();
@@ -111,7 +114,10 @@ namespace DeathMustDieSaveEditor.Core.Logic
 
         private void WriteFile(string filePath, byte[] fileData)
         {
-            using (FileStream fileStream = File.OpenWrite(filePath))
+            // File.OpenWrite does not truncate the file which can leave
+            // trailing bytes from the previous save. Opening the stream with
+            // FileMode.Create ensures the file is overwritten completely.
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 fileStream.Write(fileData, 0, fileData.Length);
             }
