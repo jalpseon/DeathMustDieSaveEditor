@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using DeathMustDieSaveEditor.Core.Models.SaveStructure;
+using System.Linq;
 
 namespace DeathMustDieSaveEditor.Core.Models.SaveStructure
 {
@@ -9,23 +10,35 @@ namespace DeathMustDieSaveEditor.Core.Models.SaveStructure
         public IList<string> keys { get; set; }
         public IList<string> values { get; set; }
 
+        private int GetProfileStateIndex()
+        {
+            if (keys == null)
+                return 0;
+
+            int index = keys.ToList().FindIndex(k => k != null && k.Contains("Profile+ProfileState"));
+            return index >= 0 ? index : 0;
+        }
+
         public Progression GetProgression()
         {
-            string prog = values[0];
+            int index = GetProfileStateIndex();
+            string prog = values[index];
             var res = JsonConvert.DeserializeObject<Progression>(prog);
             return res;
         }
 
         public string GetNotParsedProgression()
         {
-            string prog = values[0];
+            int index = GetProfileStateIndex();
+            string prog = values[index];
             return prog;
         }
 
         public void SaveProgression(Progression progression)
         {
+            int index = GetProfileStateIndex();
             var serializedProgression = JsonConvert.SerializeObject(progression);
-            this.values[0] = serializedProgression;
+            this.values[index] = serializedProgression;
         }
     }
 
